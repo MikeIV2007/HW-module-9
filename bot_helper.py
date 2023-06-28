@@ -22,31 +22,67 @@
 Логіка команд реалізована в окремих функціях і ці функції приймають на вхід один або декілька рядків та повертають рядок.
 Вся логіка взаємодії з користувачем реалізована у функції main, всі print та input відбуваються тільки там."""
 
- 
+import re
+import sys
+
 USER_DATA_DICTIONARY = {}
 
 
-
-def user_input():
+def input_error():# function decorator
     while True:
         try:
-            
-            user_info = input ('Enter your name: ') # type str
-        
-            #Бот не чутливий до регістру введених команд.
-            if user_info in ("good bye", "close", "exit"):
-                break 
-        except:
-            continue
+            user_input = input ('Please enter command: ') # type str
 
-def helper():
-    ...
+            if user_input.lower() in ('good bye', 'close', 'exit'):
+                print ('\nGood bye! Have a nice day!\n')
+                exit()
+
+        
+        except (KeyError, ValueError, IndexError):
+            print ('Wrong input! Try againe!')
+            continue
+        
+
+
+        return user_input
+    
+def identify_command(input):
+
+    regex_command = r'^\w+'
+    match = re.findall(regex_command, input)
+    command = (match[0]).lower()
+
+    if command in COMMAND_INPUT:
+        print ('ok')
+        return COMMAND_INPUT[command]
+        
+    else:
+        print ('Unknown command! Try agayn!')
+        return main
+
+    
+# def hello():
+#     print ('How can I help you?\n')
+#     return main()
+
+#def add():
+    # input ("Give me name and phone please:")
+    # return main()
+
+
 
 def give_answer():
     ...
 
+COMMAND_INPUT = {}
+#,'hello': hello(), 'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
+
 def main():
-    user_input()
+    user_input = input_error()
+    identify_command(user_input)
+    # command = identify_command(user_input)
+    # print (command)
 
 if __name__ == '__main__':
     main()
+#'add Mykhaylo +380672828313'
