@@ -43,27 +43,31 @@ def input_error():# function decorator
 
         return user_input
 
-def identify_command(input:str, dict: dict):
+def identify_command_info(input:str, dict: dict):
 
     regex_command = r'^\w+'
-    match = re.findall(regex_command, input)
-    command = (match[0]).lower()
+    match = re.search(regex_command, input)
+    command = (match.group()).lower()
+    span = match.span()
+    print (span)
+    info = input[span[1]:].strip()
+    print (info)
     for operator, func in dict.items():
 
         if command in operator:
             # print (command)
             # print ('ok')
-            return func()
+            return func(info)
 
     else:
         print (f'\nUnknown command! Try again!')
         return main()
        
-def hello():
+def hello(info):
     print ('\nHow can I help you?\n')
     return main()
 
-def add():
+def add(info):
     input ("n\Give me name and phone number please:\n>>>")
     return main()
 
@@ -77,7 +81,7 @@ COMMAND_INPUT = {'hello': hello, 'add': add }
 
 def main():
     user_input = input_error()
-    identify_command(user_input, COMMAND_INPUT)
+    identify_command_info(user_input, COMMAND_INPUT)
    #
     # command = identify_command(user_input)
     # print (command)
