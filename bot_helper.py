@@ -31,55 +31,54 @@ USER_DATA_DICTIONARY = {}
 def input_error():# function decorator
     while True:
         try:
-            user_input = input ('Please enter command: ') # type str
+            user_input = input ('\nPlease enter command: ') # type str
 
             if user_input.lower() in ('good bye', 'close', 'exit'):
                 print ('\nGood bye! Have a nice day!\n')
                 exit()
 
-        
         except (KeyError, ValueError, IndexError):
-            print ('Wrong input! Try againe!')
+            print ('\nWrong input! Try againe!\n')
             continue
-        
-
 
         return user_input
-    
-def identify_command(input):
+
+def identify_command(input:str, dict: dict):
 
     regex_command = r'^\w+'
     match = re.findall(regex_command, input)
     command = (match[0]).lower()
+    for operator, func in dict.items():
 
-    if command in COMMAND_INPUT:
-        print ('ok')
-        return COMMAND_INPUT[command]
-        
+        if command in operator:
+            # print (command)
+            # print ('ok')
+            return func()
+
     else:
-        print ('Unknown command! Try agayn!')
-        return main
+        print (f'\nUnknown command! Try again!')
+        return main()
+       
+def hello():
+    print ('\nHow can I help you?\n')
+    return main()
 
-    
-# def hello():
-#     print ('How can I help you?\n')
-#     return main()
-
-#def add():
-    # input ("Give me name and phone please:")
-    # return main()
+def add():
+    input ("n\Give me name and phone number please:\n>>>")
+    return main()
 
 
 
 def give_answer():
     ...
 
-COMMAND_INPUT = {}
+COMMAND_INPUT = {'hello': hello, 'add': add }
 #,'hello': hello(), 'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
 
 def main():
     user_input = input_error()
-    identify_command(user_input)
+    identify_command(user_input, COMMAND_INPUT)
+   #
     # command = identify_command(user_input)
     # print (command)
 
