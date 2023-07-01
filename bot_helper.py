@@ -33,15 +33,25 @@ USER_DATA_DICTIONARY = {}
 
 def add(user_name, phone_number):
     if user_name in USER_DATA_DICTIONARY:
-        print (f'contat {user_name} is already exist!\nTry other options!')
+        print (f'\nContat {user_name} is already exist!\nTry other options!')
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'New contat {user_name} {phone_number} added successfully!')
+    
+    print (USER_DATA_DICTIONARY)
+    return main()
+
+def change(user_name, phone_number):
+    if user_name not in USER_DATA_DICTIONARY:
+        print (f'contat {user_name} is already exist!\nTry other options!')
+        main()
+    USER_DATA_DICTIONARY[user_name] = phone_number
+    print (f'Phone number {phone_number} for {user_name} changed successfully!')
     print (USER_DATA_DICTIONARY)
     return main()
 
 
-COMMAND_INPUT = {'add': add }
+COMMAND_INPUT = {'add': add, 'change': change }
 #'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
 
 def execute_command(command, user_name, phone_number) -> None:
@@ -178,8 +188,8 @@ if __name__ == "__main__":
 # ADD Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # +380(67)282-8-313
-# CHange Bill Jonson +380(67)333-43-54
-# CHANGE Bill +380(67)333-43-54
+# CHange Bill Jonson +380(67)111-41-77
+# CHANGE Bill +380(67)454-12-12
 
 
 
