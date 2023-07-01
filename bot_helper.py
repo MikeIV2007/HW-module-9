@@ -36,22 +36,27 @@ def add(user_name, phone_number):
         print (f'\nContat {user_name} is already exist!\nTry other options!')
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
-    print (f'New contat {user_name} {phone_number} added successfully!')
-    
-    print (USER_DATA_DICTIONARY)
+    print (f'\nNew contat {user_name} {phone_number} added successfully!')
     return main()
 
 def change(user_name, phone_number):
     if user_name not in USER_DATA_DICTIONARY:
-        print (f'contat {user_name} is already exist!\nTry other options!')
+        print (f'\nContat {user_name} is already exist!\nTry other options!')
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
-    print (f'Phone number {phone_number} for {user_name} changed successfully!')
-    print (USER_DATA_DICTIONARY)
+    print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
+    return main()
+
+def phone(user_name, phone_number):
+    if user_name not in USER_DATA_DICTIONARY:
+        print (f'\nContat {user_name} is not exist!\nTry other options!')
+        main()
+    phone_number = USER_DATA_DICTIONARY[user_name]
+    print (f'\nFor {user_name} phone number is {phone_number}')
     return main()
 
 
-COMMAND_INPUT = {'add': add, 'change': change }
+COMMAND_INPUT = {'add': add, 'change': change, 'phone': phone }
 #'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
 
 def execute_command(command, user_name, phone_number) -> None:
@@ -60,14 +65,14 @@ def execute_command(command, user_name, phone_number) -> None:
 def input_error(func):
     def wrapper(data):
         try:
-            if len(data.split(' '))>=3:
+            if len(data.split(' '))>=1:
                 #print (len(data.split(' ')))
                 #print ('OK')
                 result = func(data)                
 
             else:
                 print (len(data.split(' ')))
-                print ('Your must have at least 3 arguments! Try again!')
+                print ('Your must have at least 1 arguments! Try again!')
                 return main()
         except(KeyError, ValueError, IndexError):
             print ('\nWrong input! Try again\n')
@@ -76,7 +81,7 @@ def input_error(func):
     return wrapper
 
 
-def pars_user_info(user_info):
+def pars_user_info(command, user_info ):
     regex_name = r'[a-zA-Z]+'
     regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
     match_name = re.findall(regex_name, user_info)
@@ -93,26 +98,29 @@ def pars_user_info(user_info):
 
     else:
         name =' '.join(match_name)
-        #print (name)
 
-    match_phone = re.findall(regex_phone, user_info)
-    if not match_phone:
-
-        while True:
-            new_number=input("\nPhone number is not correct!\nEnter phone number in format+380(11)111-1-111 or +380(11)111-11-11!\n\n>>>")
-            match_phone = re.findall(regex_phone, new_number)
-            print (match_phone)
-            if not match_phone:
-                continue
-            phone = match_phone[0]
-            print (phone)
-            if phone:
-                print (phone)
-                break
+    if command ==  'phone':
+        phone = '+380(11)111-11-11'
 
     else:
-        phone = match_phone[0]
-        #print (phone)
+        match_phone = re.findall(regex_phone, user_info)
+        if not match_phone:
+
+            while True:
+                new_number=input("\nPhone number is not correct!\nEnter phone number in format+380(11)111-1-111 or +380(11)111-11-11!\n\n>>>")
+                match_phone = re.findall(regex_phone, new_number)
+                #print (match_phone)
+                if not match_phone:
+                    continue
+                phone = match_phone[0]
+                #print (phone)
+                if phone:
+                    #print (phone)
+                    break
+
+        else:
+            phone = match_phone[0]
+            #print (phone)
 
     return name, phone
 
@@ -139,7 +147,7 @@ def identify_command_get_info(input):
 def get_user_input():
     table_of_commands()
     while True:
-        user_input = input(f"\nEnter command in format according to table above\n\n>>>")
+        user_input = (input(f"\nEnter command in format according to table above\n\n>>>")).strip()
         if user_input.lower() in ('good bye', 'close', 'exit'):
             print ('\nGood bye! Have a nice day!\n')
             exit()
@@ -147,7 +155,7 @@ def get_user_input():
             print("How can I help you?")
             continue
         if user_input.lower()== 'show all':
-            print ('show all')
+            print (USER_DATA_DICTIONARY)
             continue
         else:
             return user_input
@@ -159,7 +167,7 @@ def table_of_commands():
     table.add_column("NAME", justify="center")
     table.add_column("PHONE NUMBER", justify="center")
     table.add_column("DESCRIPTION", justify="left")
-    table.add_row('helo', '-', '-', 'Greeting')
+    table.add_row('hello', '-', '-', 'Greeting')
     table.add_row('add', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Add new contact')
     table.add_row('change', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Change phone number')
     table.add_row('phone', 'Name Surname*', '-', 'Getting phone number')
@@ -173,11 +181,11 @@ def main():
     user_input = get_user_input()
     #print (user_input)
     command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
-    print (command)
-    print (user_info)
-    name, phone = pars_user_info(user_info)
-    print (name)
-    print (phone)
+    #print (command)
+    #print (user_info)
+    name, phone = pars_user_info(command, user_info)
+    #print (name)
+    #print (phone)
     execute_command(command, name, phone)
 
     
@@ -190,59 +198,5 @@ if __name__ == "__main__":
 # +380(67)282-8-313
 # CHange Bill Jonson +380(67)111-41-77
 # CHANGE Bill +380(67)454-12-12
-
-
-
-
-# def input_error():# function decorator
-
-#         except (KeyError, ValueError, IndexError):
-#             print ('\nWrong input! Try againe!\n')
-#             continue
-
-#         return user_input
-
-
-       
-# def hello():
-#     print ('\nHow can I help you?\n')
-#     return main()
-
-# def add():
-#     user_input =  input ("\nEnter the name and phone number in the next format:\n\nName Surname +380(11)111-1-1 or '+380(11)111-11-11\n\n>>>")
-#     regex_name = r'[a-zA-Z]+'
-#     regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
-#     match_name = re.findall(regex_name, user_input)
-#     if not match_name:
-#         print ("Name is not correct! Try againe!")
-#         return add()
-#     name =' '.join(match_name)
-#     print (name)
-#     match_phone = re.findall(regex_phone, user_input)
-#     if not match_phone:
-#         print ("\nPhone is not correct! Try againe!\n")
-#         return add()
-#     phone = match_phone[0]
-#     print (phone)
-
-#     return main()
-
-
-
-# def give_answer():
-#     ...
-
-# COMMAND_INPUT = {'hello': hello, 'add...': add, 'change...':'Enter user name and new phone please' }
-# #'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
-
-# def main():
-#     user_input = input_error()
-#     identify_command(user_input, COMMAND_INPUT)
-
-
-# if __name__ == '__main__':
-#     main()
-# #Mykhaylo Ivanov +380(67)282-83-13
-# #Mykhaylo +380(67)282-83-13
-# #Mykhaylo +380(67)282-8-313
-# # +380(67)282-8-313
+# PHONE Bill Jonson
+# PHONE Bill
