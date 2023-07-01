@@ -26,10 +26,16 @@ import re
 from rich import print
 from rich.table import Table
 
-# import sys
-
 USER_DATA_DICTIONARY = {}
 
+def exit_programm_save_dict():
+    #path = 'contacts_log.txt'
+    with open('contacts_log.txt', 'w') as file:
+          file.write("emlpoyee_data_bytes")
+    
+    print (USER_DATA_DICTIONARY)
+    print ('\nAll data seved to the contacts_log.txt\n\nGood bye! Have a nice day!\n')
+    exit()
 
 def add(user_name, phone_number):
     if user_name in USER_DATA_DICTIONARY:
@@ -65,16 +71,16 @@ def execute_command(command, user_name, phone_number) -> None:
 def input_error(func):
     def wrapper(data):
         try:
-            if len(data.split(' '))>=1:
+            if len(data.split(' '))>=2:
                 #print (len(data.split(' ')))
                 #print ('OK')
                 result = func(data)                
 
             else:
                 print (len(data.split(' ')))
-                print ('Your must have at least 1 arguments! Try again!')
+                print ('Your must have at least 2 arguments! Try again!')
                 return main()
-        except(KeyError, ValueError, IndexError):
+        except(KeyError, ValueError, IndexError, TypeError):
             print ('\nWrong input! Try again\n')
             return main()
         return result
@@ -140,17 +146,17 @@ def identify_command_get_info(input):
             user_info = input[span[1]:].strip()
             #print (user_info)
             return command, user_info
-        else:
-            print ('\nUnknown command! Try agayn!')
-            return main()       
+    else:
+        print ('\nUnknown command! Try agayn!')
+        return main()       
         
 def get_user_input():
     table_of_commands()
     while True:
         user_input = (input(f"\nEnter command in format according to table above\n\n>>>")).strip()
         if user_input.lower() in ('good bye', 'close', 'exit'):
-            print ('\nGood bye! Have a nice day!\n')
-            exit()
+            #print ('\nGood bye! Have a nice day!\n')
+            exit_programm_save_dict()
         if user_input.lower() == 'hello':
             print("How can I help you?")
             continue
@@ -200,3 +206,5 @@ if __name__ == "__main__":
 # CHANGE Bill +380(67)454-12-12
 # PHONE Bill Jonson
 # PHONE Bill
+# 12m3m4n
+# 12me3m3m 123m3mm2
