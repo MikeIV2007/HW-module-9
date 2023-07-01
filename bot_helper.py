@@ -28,12 +28,26 @@ from rich.table import Table
 
 USER_DATA_DICTIONARY = {}
 
-def exit_programm_save_dict():
-    #path = 'contacts_log.txt'
+def load_data():
+    with open('contacts_log.txt', 'r') as file:
+        list = file.readlines()
+        if list == []:
+            return USER_DATA_DICTIONARY
+        else:
+            for item in list:
+                item_split =item.split(':')
+                USER_DATA_DICTIONARY[item_split[0]] = item_split[1].replace('\n', '')
+                return USER_DATA_DICTIONARY
+             
+
+def save_data():
     with open('contacts_log.txt', 'w') as file:
-          file.write("emlpoyee_data_bytes")
-    
-    print (USER_DATA_DICTIONARY)
+        for name, phone in USER_DATA_DICTIONARY.items(): 
+            file.write(f"{name}:{phone}\n")
+
+
+def exit_programm_save_dict():
+    save_data()
     print ('\nAll data seved to the contacts_log.txt\n\nGood bye! Have a nice day!\n')
     exit()
 
@@ -43,6 +57,7 @@ def add(user_name, phone_number):
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nNew contat {user_name} {phone_number} added successfully!')
+    save_data()
     return main()
 
 def change(user_name, phone_number):
@@ -51,6 +66,7 @@ def change(user_name, phone_number):
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
+    save_data()
     return main()
 
 def phone(user_name, phone_number):
@@ -58,7 +74,7 @@ def phone(user_name, phone_number):
         print (f'\nContat {user_name} is not exist!\nTry other options!')
         main()
     phone_number = USER_DATA_DICTIONARY[user_name]
-    print (f'\nFor {user_name} phone number is {phone_number}')
+    print (f'\n{user_name} phone number is {phone_number}')
     return main()
 
 
@@ -77,9 +93,9 @@ def input_error(func):
                 result = func(data)                
 
             else:
-                print (len(data.split(' ')))
-                print ('Your must have at least 2 arguments! Try again!')
+                print ('\nYour must have at least 2 arguments! Try again!')
                 return main()
+            
         except(KeyError, ValueError, IndexError, TypeError):
             print ('\nWrong input! Try again\n')
             return main()
@@ -184,6 +200,7 @@ def table_of_commands():
 
 
 def main():
+    load_data()
     user_input = get_user_input()
     #print (user_input)
     command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
@@ -208,3 +225,6 @@ if __name__ == "__main__":
 # PHONE Bill
 # 12m3m4n
 # 12me3m3m 123m3mm2
+# ADD Jill Bonson +380(67)333-43-54
+# ADD Jill +380(67)333-43-54
+# change Jill +380(67)222-33-55
