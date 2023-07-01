@@ -29,8 +29,23 @@ from rich.table import Table
 # import sys
 
 USER_DATA_DICTIONARY = {}
-COMMAND_INPUT = {'hello': 'hello', 'add': 'add' }
-#,'hello': hello(), 'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
+
+
+def add(user_name, phone_number):
+    if user_name in USER_DATA_DICTIONARY:
+        print (f'contat {user_name} is already exist!\nTry other options!')
+        main()
+    USER_DATA_DICTIONARY[user_name] = phone_number
+    print (f'New contat {user_name} {phone_number} added successfully!')
+    print (USER_DATA_DICTIONARY)
+    return main()
+
+
+COMMAND_INPUT = {'add': add }
+#'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
+
+def execute_command(command, user_name, phone_number) -> None:
+    COMMAND_INPUT[command](user_name, phone_number)
 
 def input_error(func):
     def wrapper(data):
@@ -38,8 +53,7 @@ def input_error(func):
             if len(data.split(' '))>=3:
                 #print (len(data.split(' ')))
                 #print ('OK')
-                result = func(data)
-                
+                result = func(data)                
 
             else:
                 print (len(data.split(' ')))
@@ -50,52 +64,6 @@ def input_error(func):
             return main()
         return result
     return wrapper
-    
-# def input_error2(func):
-#     def wrapper(data):
-#         regex_name = r'[a-zA-Z]+'
-#         regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
-#         match_name = re.findall(regex_name, data)
-#         if not match_name:
-#             try:
-#                 while True:
-#                     input("\nName is not correct! Enter correct name!\n\n>>>")
-#                     match_name = re.findall(regex_name, data)
-#                     if not match_name:
-#                         continue
-#                     name =' '.join(match_name)
-#                     if name:
-#                         break
-#             except(KeyError, ValueError, IndexError):
-#                 print ('\nSomthing went wrong! Try again\n')
-#                 return main()
-#         else:
-#             name =' '.join(match_name)
-#             print (name)
-    
-#         match_phone = re.findall(regex_phone, data)
-#         if not match_phone:
-#             try:
-#                 while True:
-#                     input("\nPhone number is not correct! Enter correct phone number!\n\n>>>")
-#                     match_phone = re.findall(regex_phone, data)
-#                     if not match_phone:
-#                         continue
-#                     phone = match_phone[0]
-#                     if phone:
-#                         break
-
-#             except(KeyError, ValueError, IndexError):
-#                 print ('\nSomthing went wrong! Try again\n')
-#                 return main()
-#         else:
-#             phone = match_phone[0]
-#             print (phone)
-
-#         return name, phone
-
-#     return wrapper
-
 
 
 def pars_user_info(user_info):
@@ -121,7 +89,7 @@ def pars_user_info(user_info):
     if not match_phone:
 
         while True:
-            new_number=input("\nPhone number is not correct! Enter correct phone number!\n\n>>>")
+            new_number=input("\nPhone number is not correct!\nEnter phone number in format+380(11)111-1-111 or +380(11)111-11-11!\n\n>>>")
             match_phone = re.findall(regex_phone, new_number)
             print (match_phone)
             if not match_phone:
@@ -145,7 +113,7 @@ def identify_command_get_info(input):
     match = re.search(regex_command, input)
     
     if match:
-        print (match)
+        #print (match)
         command = (match.group()).lower()
         if command in COMMAND_INPUT:
             #print (f'command = {command}')
@@ -185,7 +153,9 @@ def table_of_commands():
     table.add_row('add', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Add new contact')
     table.add_row('change', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Change phone number')
     table.add_row('phone', 'Name Surname*', '-', 'Getting phone number')
-    table.add_row('show all', '-', '-', 'Getting all database')    
+    table.add_row('show all', '-', '-', 'Getting all database')
+    table.add_row('good bye / close / exit', '-', '-', 'Exit') 
+   
     return print (table)
 
 
@@ -198,6 +168,7 @@ def main():
     name, phone = pars_user_info(user_info)
     print (name)
     print (phone)
+    execute_command(command, name, phone)
 
     
 if __name__ == "__main__":
@@ -207,6 +178,8 @@ if __name__ == "__main__":
 # ADD Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # +380(67)282-8-313
+# CHange Bill Jonson +380(67)333-43-54
+# CHANGE Bill +380(67)333-43-54
 
 
 
