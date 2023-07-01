@@ -43,32 +43,38 @@ def input_error():# function decorator
 
         return user_input
 
-def identify_command_info(input:str, dict: dict):
+def identify_command(input:str, dict: dict):
 
-    regex_command = r'^\w+'
-    match = re.search(regex_command, input)
-    command = (match.group()).lower()
-    span = match.span()
-    print (span)
-    info = input[span[1]:].strip()
-    print (info)
     for operator, func in dict.items():
 
-        if command in operator:
-            # print (command)
-            # print ('ok')
-            return func(info)
+        if input == operator:
+            return func()
 
     else:
         print (f'\nUnknown command! Try again!')
         return main()
        
-def hello(info):
+def hello():
     print ('\nHow can I help you?\n')
     return main()
 
-def add(info):
-    input ("n\Give me name and phone number please:\n>>>")
+def add():
+    user_input =  input ("\nEnter the name and phone number in the next format:\n\nName Surname +380(11)111-1-1 or '+380(11)111-11-11\n\n>>>")
+    regex_name = r'[a-zA-Z]+'
+    regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
+    match_name = re.findall(regex_name, user_input)
+    if not match_name:
+        print ("Name is not correct! Try againe!")
+        return add()
+    name =' '.join(match_name)
+    print (name)
+    match_phone = re.findall(regex_phone, user_input)
+    if not match_phone:
+        print ("\nPhone is not correct! Try againe!\n")
+        return add()
+    phone = match_phone[0]
+    print (phone)
+
     return main()
 
 
@@ -76,16 +82,17 @@ def add(info):
 def give_answer():
     ...
 
-COMMAND_INPUT = {'hello': hello, 'add': add }
-#,'hello': hello(), 'add': add(), 'change':'Enter user name and new phone please', 'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
+COMMAND_INPUT = {'hello': hello, 'add...': add, 'change...':'Enter user name and new phone please' }
+#'phone' : 'The phone for this user is: ', 'show all': 'here all info in my database'}
 
 def main():
     user_input = input_error()
-    identify_command_info(user_input, COMMAND_INPUT)
-   #
-    # command = identify_command(user_input)
-    # print (command)
+    identify_command(user_input, COMMAND_INPUT)
+
 
 if __name__ == '__main__':
     main()
-#'add Mykhaylo +380672828313'
+#Mykhaylo Ivanov +380(67)282-83-13
+#Mykhaylo +380(67)282-83-13
+#Mykhaylo +380(67)282-8-313
+# +380(67)282-8-313
