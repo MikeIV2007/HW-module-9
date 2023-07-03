@@ -1,12 +1,17 @@
-# Всі помилки введення користувача повинні оброблятися за допомогою декоратора . Цей декоратор відповідає за повернення користувачеві повідомлень типу "Enter user name", "Give me name and phone please" тощо. Декоратор input_error повинен обробляти винятки, що виникають у функціях-handler (KeyError, ValueError, IndexError) та повертати відповідну відповідь користувачеві.
-# Логіка команд реалізована в окремих функціях і ці функції приймають на вхід один або декілька рядків та повертають рядок.
-# Вся логіка взаємодії з користувачем реалізована у функції main, всі print та input відбуваються тільки там."""
-
 import re
 from rich import print
 from rich.table import Table
 
 USER_DATA_DICTIONARY = {}
+
+def not_user_name(func):
+    def wrapper(user_name, phone_number):
+        if user_name not in USER_DATA_DICTIONARY:
+            print (f'\nContat {user_name} is not exist! Try other options!')
+            main()
+        else:
+            func(user_name, phone_number)
+    return wrapper
 
 def load_data():
     try:
@@ -45,20 +50,15 @@ def add(user_name, phone_number):
     return main()
 
 
+@not_user_name
 def change(user_name, phone_number):
-    if user_name not in USER_DATA_DICTIONARY:
-        print (f'\nContat {user_name} is not exist! Try other options!')
-        main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
     save_data()
     return main()
 
-
+@not_user_name
 def phone(user_name, phone_number):
-    if user_name not in USER_DATA_DICTIONARY:
-        print (f'\nContat {user_name} is not exist!\nTry other options!')
-        main()
     phone_number = USER_DATA_DICTIONARY[user_name]
     print (f'\n{user_name} phone number is {phone_number}')
     return main()
@@ -79,7 +79,7 @@ def show_all():
 
         for item in list:
             item_split =item.split(':')
-            table.add_row(item_split[0], item_split[1])
+            table.add_row(item_split[0], item_split[1].replace('\n', ''))
     print (table)
     return main()         
 
@@ -94,17 +94,24 @@ def execute_command(command, user_name, phone_number) -> None:
 def input_error(func):
     def wrapper(data):
         try:
-            if len(data.split(' '))>=2:
-                result = func(data)                
-
-            else:
-                print ('\nYour must have at least 2 arguments! Try again!')
-                return main()
+            regex_command = r'^[a-zA-Z]+'
+            match = re.search(regex_command, data)
             
-        except(KeyError, ValueError, IndexError, TypeError):
-            print ('\nWrong input! Try again\n')
+            if match:
+                command = (match.group()).lower()
+
+            if command in COMMAND_INPUT:
+                span = match.span()
+                user_info = data[span[1]:].strip()
+                return command, user_info
+            
+            else:
+                print ('\nUnknown command! Try agayn!')
+                return main()
+                
+        except(KeyError, ValueError, IndexError, TypeError, UnboundLocalError):
+            print ('\nWrong input! Try again')
             return main()
-        return result
     return wrapper
 
 
@@ -134,7 +141,7 @@ def pars_user_info(command, user_info ):
         if not match_phone:
 
             while True:
-                new_number=input("\nPhone number is not correct!\nEnter phone number in format+380(11)111-1-111 or +380(11)111-11-11!\n\n>>>")
+                new_number=input("\nPhone number is not correct!\nEnter phone number in format:\n+380(11)111-1-111 or +380(11)111-11-11\n\n>>>")
                 match_phone = re.findall(regex_phone, new_number)
 
                 if not match_phone:
@@ -203,6 +210,7 @@ def main():
     load_data()
     user_input = get_user_input()
     command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
+    identify_command_get_info(user_input ) # output is tuple form two values
     name, phone = pars_user_info(command, user_info)
     execute_command(command, name, phone)
 
@@ -210,10 +218,13 @@ def main():
 if __name__ == "__main__":
     main()
 
+#
 # ADD Bill Jonson +380(67)333-43-54
 # ADD Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # +380(67)282-8-313
+# CHange Mike Jonn +380(67)111-41-77
+# PHONE Mike Jonn +380(67)111-41-77
 # CHange Bill Jonson +380(67)111-41-77
 # CHANGE Bill +380(67)454-12-12
 # PHONE Bill Jonson
@@ -221,6 +232,10 @@ if __name__ == "__main__":
 # 12m3m4n
 # 12me3m3m 123m3mm2
 # ADD Jill Bonson +380(67)333-43-54
+# PhOnE Jill Bonson +380(67)333-43-54
 # ADD Jill +380(67)333-43-54
 # change Jill +380(67)222-33-55
 # Иванов Иван Иванович +380(67)222-33-55
+# change Иванов Иван Иванович +380(67)999-1-777
+# phone Иванов Иван Иванович 
+# dfsadfads asdgfas ref asdf     TypeError
