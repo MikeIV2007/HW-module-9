@@ -4,10 +4,10 @@ from rich.table import Table
 
 USER_DATA_DICTIONARY = {}
 
-def not_user_name(func):
+def user_name_exists(func):
     def wrapper(user_name, phone_number):
         if user_name not in USER_DATA_DICTIONARY:
-            print (f'\nContat {user_name} is not exist! Try other options!')
+            print (f'\nContact {user_name} is not exist! Try other options!')
             main()
         else:
             func(user_name, phone_number)
@@ -23,7 +23,7 @@ def load_data():
                 for item in list:
                     item_split =item.split(':')
                     USER_DATA_DICTIONARY[item_split[0]] = item_split[1].replace('\n', '')
-                    return USER_DATA_DICTIONARY
+            return USER_DATA_DICTIONARY
     except FileNotFoundError:
         return None
         
@@ -43,21 +43,21 @@ def exit_programm_save_dict():
 def add(user_name, phone_number):
     if user_name in USER_DATA_DICTIONARY:
         print (f'\nContat {user_name} is already exist! Try other options!')
+        save_data()
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nNew contat {user_name} {phone_number} added successfully!')
-    save_data()
     return main()
 
 
-@not_user_name
+@user_name_exists
 def change(user_name, phone_number):
     USER_DATA_DICTIONARY[user_name] = phone_number
-    print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
     save_data()
+    print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
     return main()
 
-@not_user_name
+@user_name_exists
 def phone(user_name, phone_number):
     phone_number = USER_DATA_DICTIONARY[user_name]
     print (f'\n{user_name} phone number is {phone_number}')
@@ -81,7 +81,7 @@ def show_all():
             item_split =item.split(':')
             table.add_row(item_split[0], item_split[1].replace('\n', ''))
     print (table)
-    return main()         
+    return main()       
 
 
 COMMAND_INPUT = {'add': add, 'change': change, 'phone': phone }
@@ -123,6 +123,8 @@ def pars_user_info(command, user_info ):
         
         while True:
             new_name = input("\nName is not correct! Enter correct name!\n\n>>>")
+            if new_name.lower() in ('good bye', 'close', 'exit'):
+                exit_programm_save_dict()
             match_name = re.findall(regex_name, new_name)
             if not match_name:
                 continue
@@ -141,7 +143,9 @@ def pars_user_info(command, user_info ):
         if not match_phone:
 
             while True:
-                new_number=input("\nPhone number is not correct!\nEnter phone number in format:\n+380(11)111-1-111 or +380(11)111-11-11\n\n>>>")
+                new_number=input("\nPhone number is not correct!\nEnter phone number in format:\n\n+380(11)111-1-111 or +380(11)111-11-11\n\n>>>")
+                if new_number.lower() in ('good bye', 'close', 'exit'):
+                    exit_programm_save_dict()
                 match_phone = re.findall(regex_phone, new_number)
 
                 if not match_phone:
@@ -193,7 +197,7 @@ def table_of_commands():
 
     table = Table(title="\nALL VALID COMMANDS AND FORMAT OF DATA\n* - optional ")
     table.add_column("COMMAND", justify="left")
-    table.add_column("NAME", justify="center")
+    table.add_column("NAME", justify="left")
     table.add_column("PHONE NUMBER", justify="center")
     table.add_column("DESCRIPTION", justify="left")
     table.add_row('hello', '-', '-', 'Greeting')
