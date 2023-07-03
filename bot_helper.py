@@ -43,10 +43,10 @@ def exit_programm_save_dict():
 def add(user_name, phone_number):
     if user_name in USER_DATA_DICTIONARY:
         print (f'\nContat {user_name} is already exist! Try other options!')
-        save_data()
         main()
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nNew contat {user_name} {phone_number} added successfully!')
+    save_data()
     return main()
 
 
@@ -65,23 +65,28 @@ def phone(user_name, phone_number):
 
 
 def show_all():
-    with open('contacts_log.txt', 'r') as file:
-        list = file.readlines()
+    try:
+        with open('contacts_log.txt', 'r') as file:
+            list = file.readlines()
 
-    if list == []:
+        if list == []:
+            print ('\nDatabase is empty!')
+            return main()
+        
+        else:
+            table = Table(title="ALL CONTACTS IN DATABASE")
+            table.add_column("Name", justify="left")
+            table.add_column("Phone number", justify="center")
+
+            for item in list:
+                item_split =item.split(':')
+                table.add_row(item_split[0], item_split[1].replace('\n', ''))
+        print (table)
+        return main()
+    except FileNotFoundError:
         print ('\nDatabase is empty!')
         return main()
-    
-    else:
-        table = Table(title="ALL CONTACTS IN DATABASE")
-        table.add_column("Name", justify="left")
-        table.add_column("Phone number", justify="center")
-
-        for item in list:
-            item_split =item.split(':')
-            table.add_row(item_split[0], item_split[1].replace('\n', ''))
-    print (table)
-    return main()       
+             
 
 
 COMMAND_INPUT = {'add': add, 'change': change, 'phone': phone }
