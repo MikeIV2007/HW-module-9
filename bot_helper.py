@@ -5,7 +5,7 @@ from rich.table import Table
 USER_DATA_DICTIONARY = {}
 
 def user_name_exists(func):
-    def wrapper(user_name, phone_number):
+    def wrapper(user_name: str, phone_number: str):
         if user_name not in USER_DATA_DICTIONARY:
             print (f'\nContact {user_name} is not exist! Try other options!')
             main()
@@ -28,7 +28,7 @@ def load_data():
         return None
         
 
-def save_data():
+def save_data()-> None:
     with open('contacts_log.txt', 'w') as file:
         for name, phone in USER_DATA_DICTIONARY.items(): 
             file.write(f"{name}:{phone}\n")
@@ -40,7 +40,7 @@ def exit_programm_save_dict():
     exit()
 
 
-def add(user_name, phone_number):
+def add(user_name: str, phone_number:str):
     if user_name in USER_DATA_DICTIONARY:
         print (f'\nContat {user_name} is already exist! Try other options!')
         main()
@@ -51,16 +51,16 @@ def add(user_name, phone_number):
 
 
 @user_name_exists
-def change(user_name, phone_number):
+def change(user_name: str, phone_number:str):
     USER_DATA_DICTIONARY[user_name] = phone_number
     save_data()
     print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
     return main()
 
 @user_name_exists
-def phone(user_name, phone_number):
+def phone(user_name:str, phone_number: str):
     phone_number = USER_DATA_DICTIONARY[user_name]
-    print (f'\n{user_name} phone number is {phone_number}')
+    print (f'\n Phone number of {user_name} is: {phone_number}')
     return main()
 
 
@@ -74,7 +74,7 @@ def show_all():
             return main()
         
         else:
-            table = Table(title="ALL CONTACTS IN DATABASE")
+            table = Table(title="\nALL CONTACTS IN DATABASE")
             table.add_column("Name", justify="left")
             table.add_column("Phone number", justify="center")
 
@@ -97,7 +97,7 @@ def execute_command(command, user_name, phone_number) -> None:
 
 
 def input_error(func):
-    def wrapper(data):
+    def wrapper(data:str):
         try:
             regex_command = r'^[a-zA-Z]+'
             match = re.search(regex_command, data)
@@ -120,7 +120,7 @@ def input_error(func):
     return wrapper
 
 
-def pars_user_info(command, user_info ):
+def pars_user_info(command: str, user_info: str )-> tuple:
     regex_name = r'[a-zA-ZА-Яа-я]+'
     regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
     match_name = re.findall(regex_name, user_info)
@@ -167,7 +167,7 @@ def pars_user_info(command, user_info ):
     return name, phone
 
 @input_error
-def identify_command_get_info(input):
+def identify_command_get_info(input: str) -> tuple:
 
     regex_command = r'^[a-zA-Z]+'
     match = re.search(regex_command, input)
@@ -184,7 +184,7 @@ def identify_command_get_info(input):
         print ('\nUnknown command! Try agayn!')
         return main()       
         
-def get_user_input():
+def get_user_input()-> str:
     table_of_commands()
     while True:
         user_input = (input(f"\nEnter command in format according to the table above\n\n>>>")).strip()
@@ -198,7 +198,7 @@ def get_user_input():
         else:
             return user_input
         
-def table_of_commands():
+def table_of_commands()->Table:
 
     table = Table(title="\nALL VALID COMMANDS AND FORMAT OF DATA\n* - optional ")
     table.add_column("COMMAND", justify="left")
