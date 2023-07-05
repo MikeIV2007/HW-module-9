@@ -1,4 +1,7 @@
-
+"""Крута ідея)
+Але в парсері - чорт ногу зломить, думаю і Ви неділі через три будете дивитися туди великими очима)
+Також не варто при кожному чиху виводити перелік всіх команд. Достатньо при запуску, а далі - за вимогою.
+Ну і формат телефону - дуже дорстокий("""
 
 import re
 from rich import print
@@ -9,15 +12,15 @@ I = 1
 
 def table_of_commands():
 
-    table = Table(title="\nALL VALID COMMANDS AND FORMAT OF DATA\n* - optional ")
+    table = Table(title="\nALL VALID COMMANDS\nAll entered duta mutbe devided by gap!")
     table.add_column("COMMAND", justify="left")
     table.add_column("NAME", justify="left")
     table.add_column("PHONE NUMBER", justify="center")
     table.add_column("DESCRIPTION", justify="left")
     table.add_row('hello', '-', '-', 'Greeting')
-    table.add_row('add', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Add new contact')
-    table.add_row('change', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Change phone number')
-    table.add_row('phone', 'Name Surname*', '-', 'Getting phone number')
+    table.add_row('add', 'Any name ', 'Phone number in any format', 'Add new contact')
+    table.add_row('change', 'Any name', 'Phone number in any format', 'Change phone number')
+    table.add_row('phone', 'Any name', '-', 'Getting phone number')
     table.add_row('show all', '-', '-', 'Getting all database')
     table.add_row('good bye / close / exit', '-', '-', 'Exit')
     table.add_row('help', '-', '-', 'Printing table of commands')  
@@ -52,7 +55,7 @@ def load_data():
         return None
         
 
-def save_data()-> None:
+def save_data():
     with open('contacts_log.txt', 'w') as file:
         for name, phone in USER_DATA_DICTIONARY.items(): 
             file.write(f"{name}:{phone}\n")
@@ -84,7 +87,7 @@ def change(user_name: str, phone_number:str):
 @user_name_exists
 def phone(user_name:str, phone_number: str):
     phone_number = USER_DATA_DICTIONARY[user_name]
-    print (f'\n Phone number of {user_name} is: {phone_number}')
+    print (f'\nPhone number of {user_name} is: {phone_number}')
     return main()
 
 
@@ -154,47 +157,15 @@ def input_error(func):
 def pars_user_info(command: str, user_info: str )-> tuple:
 
     regex_name = r'[a-zA-ZА-Яа-я]+'
-    regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
-    match_name = re.findall(regex_name, user_info)
-    if not match_name:
-        
-        while True:
-            new_name = input("\nName is not correct! Enter correct name!\n\n>>>")
-            if new_name.lower() in ('good bye', 'close', 'exit'):
-                exit_programm_save_dict()
-            match_name = re.findall(regex_name, new_name)
-            if not match_name:
-                continue
-            name =' '.join(match_name)
-            if name:
-                break
-
-    else:
-        name =' '.join(match_name)
-
-    if command ==  'phone':
-        phone = '+380(11)111-11-11'
-
-    else:
-        match_phone = re.findall(regex_phone, user_info)
-        if not match_phone:
-
-            while True:
-                new_number=input("\nPhone number is not correct!\nEnter phone number in format:\n\n+380(11)111-1-111 or +380(11)111-11-11\n\n>>>")
-                if new_number.lower() in ('good bye', 'close', 'exit'):
-                    exit_programm_save_dict()
-                match_phone = re.findall(regex_phone, new_number)
-
-                if not match_phone:
-                    continue
-                phone = match_phone[0]
-
-                if phone:
-                    break
-
-        else:
-            phone = match_phone[0]
-
+    user_input_split = user_info.strip().split()
+    name_list =[]
+    for i in user_input_split:
+        match = re.match(regex_name, i)
+        if match:
+            name_list.append(i.capitalize())
+            user_info = user_info[match.span()[1]:].strip()
+            phone = user_info
+    name = ' '.join(name_list)
 
     return name, phone
 
@@ -220,9 +191,9 @@ def get_user_input():
 
     global I
     
-    # if I == 1:
-    #     table_of_commands()
-    #     I += 1
+    if I == 1:
+        table_of_commands()
+        I += 1
 
     while True:
 
@@ -234,7 +205,7 @@ def get_user_input():
         if user_input.lower() == 'show all':
             return COMMAND_INPUT[user_input]()                  
 
-        if user_input.lower() in  ('exit ', 'close', 'good bye'):
+        if user_input.lower() in  ('exit', 'close', 'good bye'):
             return COMMAND_INPUT[user_input]()
         
         if user_input.lower() == 'help':
