@@ -24,6 +24,7 @@ def table_of_commands():
 
     return print (table)
 
+
 def user_name_exists(func):
     def wrapper(user_name: str, phone_number: str):
         if user_name not in USER_DATA_DICTIONARY:
@@ -33,9 +34,11 @@ def user_name_exists(func):
             func(user_name, phone_number)
     return wrapper
 
+
 def hello():
     print('\nHow can I help you?')
     return main()
+
 
 def load_data():
     try:
@@ -84,6 +87,7 @@ def change(user_name: str, phone_number:str):
     print (f'\nPhone number {phone_number} for {user_name} changed successfully!')
     return main()
 
+
 @user_name_exists
 def phone(user_name:str, phone_number: str):
     phone_number = USER_DATA_DICTIONARY[user_name]
@@ -110,6 +114,7 @@ def show_all():
                 table.add_row(item_split[0], item_split[1].replace('\n', ''))
         print (table)
         return main()
+    
     except FileNotFoundError:
         print ('\nDatabase is empty!')
         return main()
@@ -153,6 +158,7 @@ def input_error(func):
             return main()
     return wrapper
 
+
 def check_phone_number(command, phone):
     if command == 'phone':
         return phone
@@ -195,6 +201,7 @@ def get_user_name(command: str, user_info: str )-> tuple:
     
     return name, phone
 
+
 @input_error
 def identify_command_get_info(input: str):
 
@@ -211,7 +218,8 @@ def identify_command_get_info(input: str):
         
     else:
         print ('\nUnknown command! Try agayn!')
-        return main()       
+        return main()
+          
         
 def get_user_input():
 
@@ -237,6 +245,7 @@ def get_user_input():
             return COMMAND_INPUT[user_input](), main() 
 
         return user_input
+    
 
 def main():
     load_data()
