@@ -68,6 +68,9 @@ def add(user_name: str, phone_number:str):
     if user_name in USER_DATA_DICTIONARY:
         print (f'\nContat {user_name} is already exist! Try other options!')
         main()
+    if phone == '':
+        print ('There is no phone number')
+        return main
     USER_DATA_DICTIONARY[user_name] = phone_number
     print (f'\nNew contat {user_name} {phone_number} added successfully!')
     save_data()
@@ -149,23 +152,49 @@ def input_error(func):
             print ('\nWrong input! Try again')
             return main()
     return wrapper
+def format_phone_number(func):
+    def inner (phone):
+        result = func(phone)
+        if len(result) == 12:
+            new_phone = '+' + result
+        if len(result) == 10:
+            new_phone = '+38' + result    
+        return new_phone
+    return inner
 
+@format_phone_number
+def sanitize_phone_number(phone):
+    new_phone = (
+        phone.strip()
+            .removeprefix("+")
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(" ", "")
+    )
+    return new_phone
 
-def pars_user_info(command: str, user_info: str )-> tuple:
+def get_user_name(command: str, user_info: str )-> tuple:
 
     regex_name = r'[a-zA-ZА-Яа-я]+'
     user_input_split = user_info.strip().split()
     name_list =[]
     for i in user_input_split:
-        match = re.match(regex_name, i)
-        if match:
-            name_list.append(i.capitalize())
-            user_info = user_info[match.span()[1]:].strip()
-            phone = user_info
+        match_name = re.match(regex_name, i)
+        if match_name:
+            if len(match_name.group()) == len(i): # checking if there are no other symbols than letters
+                name_list.append(i.capitalize())
+                user_info = user_info[match_name.span()[1]:].strip()
+                phone = user_info
+            else:
+                print ('\nName is not correct! Try again!')
+                return main()
         else:
-            print ('\nThere is no name! Try again!')
-            return main()
-    name = ' '.join(name_list)
+            if len(name_list)>=1:
+                name = ' '.join(name_list)
+            else:
+                print ('\nName is not correct! Try again!')
+                return main()
 
     return name, phone
 
@@ -191,9 +220,9 @@ def get_user_input():
 
     global I
     
-    if I == 1:
-        table_of_commands()
-        I += 1
+    # if I == 1:
+    #     table_of_commands()
+    #     I += 1
 
     while True:
 
@@ -217,7 +246,8 @@ def main():
     load_data()
     user_input = get_user_input()
     command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
-    name, phone = pars_user_info(command, user_info)
+    name, phone = get_user_name(command, user_info)
+    phone = sanitize_phone_number(phone)
     execute_command(command, name, phone)
 
     
