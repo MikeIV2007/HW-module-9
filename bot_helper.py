@@ -1,8 +1,28 @@
+
+
 import re
 from rich import print
 from rich.table import Table
 
 USER_DATA_DICTIONARY = {}
+I = 1
+
+def table_of_commands():
+
+    table = Table(title="\nALL VALID COMMANDS AND FORMAT OF DATA\n* - optional ")
+    table.add_column("COMMAND", justify="left")
+    table.add_column("NAME", justify="left")
+    table.add_column("PHONE NUMBER", justify="center")
+    table.add_column("DESCRIPTION", justify="left")
+    table.add_row('hello', '-', '-', 'Greeting')
+    table.add_row('add', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Add new contact')
+    table.add_row('change', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Change phone number')
+    table.add_row('phone', 'Name Surname*', '-', 'Getting phone number')
+    table.add_row('show all', '-', '-', 'Getting all database')
+    table.add_row('good bye / close / exit', '-', '-', 'Exit')
+    table.add_row('help', '-', '-', 'Printing table of commands')  
+   
+    return print (table)
 
 def user_name_exists(func):
     def wrapper(user_name: str, phone_number: str):
@@ -12,6 +32,10 @@ def user_name_exists(func):
         else:
             func(user_name, phone_number)
     return wrapper
+
+def hello():
+    print('\nHow can I help you?')
+    return main()
 
 def load_data():
     try:
@@ -86,10 +110,17 @@ def show_all():
     except FileNotFoundError:
         print ('\nDatabase is empty!')
         return main()
-             
+    
 
-
-COMMAND_INPUT = {'add': add, 'change': change, 'phone': phone }
+COMMAND_INPUT = {'hello': hello, 
+                 'add': add, 
+                 'change': change, 
+                 'phone': phone,
+                 'show all': show_all,
+                 'good bye': exit_programm_save_dict, 
+                 'close': exit_programm_save_dict, 
+                 'exit': exit_programm_save_dict, 
+                 'help': table_of_commands}
 
 
 def execute_command(command, user_name, phone_number) -> None:
@@ -121,6 +152,7 @@ def input_error(func):
 
 
 def pars_user_info(command: str, user_info: str )-> tuple:
+
     regex_name = r'[a-zA-ZА-Яа-я]+'
     regex_phone = regex = r'\+380\(\d{2}\)\d{3}\-\d{1}\-\d{3}|\+380\(\d{2}\)\d{3}\-\d{2}\-\d{2}'
     match_name = re.findall(regex_name, user_info)
@@ -184,42 +216,36 @@ def identify_command_get_info(input: str) -> tuple:
         print ('\nUnknown command! Try agayn!')
         return main()       
         
-def get_user_input()-> str:
-    table_of_commands()
+def get_user_input():
+
+    global I
+    
+    # if I == 1:
+    #     table_of_commands()
+    #     I += 1
+
     while True:
-        user_input = (input(f"\nEnter command in format according to the table above\n\n>>>")).strip()
-        if user_input.lower() in ('good bye', 'close', 'exit'):
-            exit_programm_save_dict()
-        if user_input.lower() == 'hello':
-            print("How can I help you?")
-            continue
-        if user_input.lower()== 'show all':
-            show_all()
-        else:
-            return user_input
+
+        user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
+
+        if user_input.lower() == "hello":
+            return COMMAND_INPUT[user_input]()
+          
+        if user_input.lower() == 'show all':
+            return COMMAND_INPUT[user_input]()                  
+
+        if user_input.lower() in  ('exit ', 'close', 'good bye'):
+            return COMMAND_INPUT[user_input]()
         
-def table_of_commands()->Table:
+        if user_input.lower() == 'help':
+            return COMMAND_INPUT[user_input](), main() 
 
-    table = Table(title="\nALL VALID COMMANDS AND FORMAT OF DATA\n* - optional ")
-    table.add_column("COMMAND", justify="left")
-    table.add_column("NAME", justify="left")
-    table.add_column("PHONE NUMBER", justify="center")
-    table.add_column("DESCRIPTION", justify="left")
-    table.add_row('hello', '-', '-', 'Greeting')
-    table.add_row('add', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Add new contact')
-    table.add_row('change', 'Name Surname*', '+380(11)111-1-111 or +380(11)111-11-11', 'Change phone number')
-    table.add_row('phone', 'Name Surname*', '-', 'Getting phone number')
-    table.add_row('show all', '-', '-', 'Getting all database')
-    table.add_row('good bye / close / exit', '-', '-', 'Exit') 
-   
-    return print (table)
-
+        return user_input
 
 def main():
     load_data()
     user_input = get_user_input()
     command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
-    identify_command_get_info(user_input ) # output is tuple form two values
     name, phone = pars_user_info(command, user_info)
     execute_command(command, name, phone)
 
