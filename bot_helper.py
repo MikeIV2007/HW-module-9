@@ -9,7 +9,7 @@ I = 1
 
 def table_of_commands():
 
-    table = Table(title="\nALL VALID COMMANDS\nAll entered duta mutbe devided by gap!")
+    table = Table(title="\nALL VALID COMMANDS:\n(All entered data must be devided by gap!)")
     table.add_column("COMMAND", justify="left")
     table.add_column("NAME", justify="left")
     table.add_column("PHONE NUMBER", justify="center")
@@ -260,6 +260,7 @@ if __name__ == "__main__":
 # CHange Bill Jonson +380(67)111-41-77
 # CHANGE Bill +380(67)454-12-12
 # PHONE Bill
+# phone Bill +380(67)333-43-54
 # 12m3m4n
 # 12me3m3m 123m3mm2
 # ADD Jill Bonson +380(67)333-43-54
