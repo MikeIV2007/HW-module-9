@@ -87,7 +87,7 @@ def change(user_name: str, phone_number:str):
 @user_name_exists
 def phone(user_name:str, phone_number: str):
     phone_number = USER_DATA_DICTIONARY[user_name]
-    print (f'\n Phone number of {user_name} is: {phone_number}')
+    print (f'\nPhone number of {user_name} is: {phone_number}')
     return main()
 
 
@@ -152,27 +152,23 @@ def input_error(func):
             print ('\nWrong input! Try again')
             return main()
     return wrapper
-def format_phone_number(func):
-    def inner (phone):
-        result = func(phone)
-        if len(result) == 12:
-            new_phone = '+' + result
-        if len(result) == 10:
-            new_phone = '+38' + result    
-        return new_phone
-    return inner
 
-@format_phone_number
-def sanitize_phone_number(phone):
-    new_phone = (
-        phone.strip()
-            .removeprefix("+")
-            .replace("(", "")
-            .replace(")", "")
-            .replace("-", "")
-            .replace(" ", "")
-    )
-    return new_phone
+def check_phone_number(command, phone):
+    if command == 'phone':
+        return phone
+    if 18>= len(phone) >= 10:
+        for i in phone:
+            if i in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', ' '):
+                continue
+            else:
+                print (f'Phone number {phone} is not correct')
+                return main()
+            
+        return phone
+    else:
+        print (f'Phone number {phone} is not valid! It must be in range from 10 to 18 characters! Try againe!')
+        return main()
+
 
 def get_user_name(command: str, user_info: str )-> tuple:
 
@@ -189,17 +185,18 @@ def get_user_name(command: str, user_info: str )-> tuple:
             else:
                 print ('\nName is not correct! Try again!')
                 return main()
-        else:
-            if len(name_list)>=1:
-                name = ' '.join(name_list)
-            else:
-                print ('\nName is not correct! Try again!')
-                return main()
 
+    if len(name_list)>=1:
+        name = ' '.join(name_list)
+        
+    else:
+        print ('\nName is not correct! Try again!')
+        return main()
+    
     return name, phone
 
 @input_error
-def identify_command_get_info(input: str) -> tuple:
+def identify_command_get_info(input: str):
 
     regex_command = r'^[a-zA-Z]+'
     match = re.search(regex_command, input)
@@ -220,12 +217,11 @@ def get_user_input():
 
     global I
     
-    # if I == 1:
-    #     table_of_commands()
-    #     I += 1
+    if I == 1:
+        table_of_commands()
+        I += 1
 
     while True:
-
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
 
         if user_input.lower() == "hello":
@@ -245,9 +241,9 @@ def get_user_input():
 def main():
     load_data()
     user_input = get_user_input()
-    command, user_info = identify_command_get_info(user_input ) # output is tuple form two values
+    command, user_info = identify_command_get_info(user_input )
     name, phone = get_user_name(command, user_info)
-    phone = sanitize_phone_number(phone)
+    phone = check_phone_number(command, phone)
     execute_command(command, name, phone)
 
     
@@ -255,7 +251,7 @@ if __name__ == "__main__":
     main()
 
 #
-# ADD Bill Jonson +380(67)333-43-54
+# 
 # ADD Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # +380(67)282-8-313
@@ -263,7 +259,6 @@ if __name__ == "__main__":
 # PHONE Mike Jonn +380(67)111-41-77
 # CHange Bill Jonson +380(67)111-41-77
 # CHANGE Bill +380(67)454-12-12
-# c
 # PHONE Bill
 # 12m3m4n
 # 12me3m3m 123m3mm2
@@ -276,4 +271,4 @@ if __name__ == "__main__":
 # phone Иванов Иван Иванович 
 # dfsadfads asdgfas ref asdf     TypeError
 # Jgfdksaflf Sdfjldsf; Asdfk;;lsdff Jldsf;sf';; sdff ; jldsf;sF';;
-# add
+# add mike 123123-12-3
