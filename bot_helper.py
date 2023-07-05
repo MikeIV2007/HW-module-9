@@ -7,7 +7,7 @@ from rich.table import Table
 USER_DATA_DICTIONARY = {}
 I = 1
 
-def table_of_commands():sho
+def table_of_commands():
 
     table = Table(title="\nALL VALID COMMANDS\nAll entered duta mutbe devided by gap!")
     table.add_column("COMMAND", justify="left")
@@ -162,6 +162,9 @@ def pars_user_info(command: str, user_info: str )-> tuple:
             name_list.append(i.capitalize())
             user_info = user_info[match.span()[1]:].strip()
             phone = user_info
+        else:
+            print ('\nThere is no name! Try again!')
+            return main()
     name = ' '.join(name_list)
 
     return name, phone
@@ -202,7 +205,7 @@ def get_user_input():
         if user_input.lower() == 'show all':
             return COMMAND_INPUT[user_input]()                  
 
-        if user_input.lower() in  ('exit ', 'close', 'good bye'):
+        if user_input.lower() in  ('exit', 'close', 'good bye'):
             return COMMAND_INPUT[user_input]()
         
         if user_input.lower() == 'help':
@@ -230,7 +233,7 @@ if __name__ == "__main__":
 # PHONE Mike Jonn +380(67)111-41-77
 # CHange Bill Jonson +380(67)111-41-77
 # CHANGE Bill +380(67)454-12-12
-# PHONE Bill Jonson
+# c
 # PHONE Bill
 # 12m3m4n
 # 12me3m3m 123m3mm2
@@ -242,3 +245,5 @@ if __name__ == "__main__":
 # change Иванов Иван Иванович +380(67)999-1-777
 # phone Иванов Иван Иванович 
 # dfsadfads asdgfas ref asdf     TypeError
+# Jgfdksaflf Sdfjldsf; Asdfk;;lsdff Jldsf;sf';; sdff ; jldsf;sF';;
+# add
